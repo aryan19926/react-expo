@@ -31,15 +31,11 @@ return(<Text>Not found</Text>);
       <Stack.Screen options={{title: product.name}}/>
     <Image source={{uri:product.image || defaultPizzaImage}} style={styles.image}/>
     
-    
-
      <Text style={styles.price}> ${product.price}</Text>
      {/* <Button onPress={addtocart} text="Add to Cart"/> */}
     </View>
   )
 }
-
-
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
@@ -60,8 +56,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 'auto',
   },
-
-  
 });
 
 
