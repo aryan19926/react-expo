@@ -1,16 +1,18 @@
-import { View, Text, StyleSheet, Image, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Image, TextInput, Alert } from 'react-native';
 import React, { useState } from 'react';
 import { defaultPizzaImage } from '@/src/components/ProductListItem';
 import Colors from '../../../constants/Colors';
 import Button from '../../../components/Button';
 import * as ImagePicker from 'expo-image-picker';
-import { Stack, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 
 const CreateScreen = () => {
   const [image, setImage] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [errors, setErrors] = useState('');
+  const {id}=useLocalSearchParams();
+  const isupdating=!!id;
 
   const router = useRouter();
 
@@ -29,6 +31,27 @@ const CreateScreen = () => {
       return false;
     }
     return true;
+  };
+   const onSubmit= () => {
+    if(isupdating) 
+    {
+        onUpdateCreate();
+    }
+    else{
+        onCreate();
+    }
+}
+
+  const onUpdateCreate = () => {
+    if (!validateInput()) {
+      return;
+    }
+
+    console.warn('Updating Product');
+    setName('');
+    setPrice('');
+    setImage('');
+    router.back();
   };
 
   const onCreate = () => {
@@ -58,9 +81,23 @@ const CreateScreen = () => {
       setImage(result.assets[0].uri);
     }
   };
+  const onDelete=()=>{
+    console.warn('Deleting!!!');
+  };
+  const confirmDelete= () => {
+    Alert.alert('Are you sure?', 'This will delete the product',[
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        { text: 'OK',
+         style: 'destructive',
+         onPress: onDelete },
+    ]);
+  };
   return (
     <View style={styles.container}>
-        <Stack.Screen options={{title: 'Create Product'}}/>
+        <Stack.Screen options={{title: isupdating ? 'Updating Product' : 'Create Product'}}/>
       <Image
         source={{ uri: image || defaultPizzaImage }}
         style={styles.image}
@@ -87,8 +124,9 @@ const CreateScreen = () => {
         keyboardType="numeric"
       />
       <Text style={styles.error}>{errors}</Text>
-      <Button onPress={onCreate} text="Create" />
-    </View>
+      <Button onPress={onSubmit} text={ isupdating? 'Update':'Create'} />
+      {isupdating && <Text onPress={confirmDelete} style={styles.textButton}>Delete</Text>}
+     </View>
   );
 };
 const styles = StyleSheet.create({
